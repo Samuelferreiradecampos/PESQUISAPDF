@@ -1,36 +1,20 @@
 import fitz  # PyMuPDF
-import os
 
-def localizar_nome(pdf_path, nome):
-    informacoes_encontradas = []
+def extrair_informacoes_pdf(caminho_pdf):
+    doc = fitz.open(caminho_pdf)
+    informacoes = []
 
-    doc = fitz.open(pdf_path)
-
-    for page_num in range(doc.page_count):
-        page = doc[page_num]
-        text = page.get_text()
-
-        # Procurar pelo nome
-        if nome in text:
-            informacoes_encontradas.append({"Tipo": "Nome", "Valor": nome, "Página": page_num + 1})
+    for pagina_num in range(doc.page_count):
+        pagina = doc[pagina_num]
+        texto = pagina.get_text()
+        
+        # Aqui você pode adicionar lógica para procurar nomes e números de servidores
+        informacoes.append(texto)
 
     doc.close()
-    return informacoes_encontradas
+    return informacoes
 
-if __name__ == "__main__":
-    # Caminho do PDF no desktop
-    pdf_path_no_desktop = os.path.join(os.path.expanduser('~'), 'Desktop', 'documento.pdf')
-
-    # Nome a ser procurado
-    nome_procurado = "Samuel Ferreira de Campos"
-
-    # Exemplo de uso
-    resultado_pesquisa = localizar_nome(pdf_path_no_desktop, nome_procurado)
-
-    # Exibir resultados apenas se houver algo para mostrar
-    if resultado_pesquisa:
-        print("Resultados da pesquisa:")
-        for resultado in resultado_pesquisa:
-            print(f"Tipo: {resultado['Tipo']}, Valor: {resultado['Valor']}, Página: {resultado['Página']}")
-    else:
-        print("Nenhum resultado encontrado.")
+# Substitua 'caminho/do/seu/arquivo.pdf' pelo caminho do seu arquivo PDF
+caminho_do_pdf = 'caminho/do/seu/arquivo.pdf'
+resultados = extrair_informacoes_pdf(caminho_do_pdf)
+print(resultados)
