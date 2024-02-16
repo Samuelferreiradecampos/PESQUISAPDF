@@ -1,65 +1,26 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pesquisa em PDF</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            text-align: center;
-            margin: 50px;
-        }
-        input[type="file"] {
-            display: none;
-        }
-        label {
-            padding: 10px;
-            background-color: #3498db;
-            color: white;
-            cursor: pointer;
-        }
-    </style>
-</head>
-<body>
-    <h1>Pesquisa em PDF</h1>
-    <input type="file" id="fileInput" accept=".pdf">
-    <label for="fileInput" id="fileLabel">Escolher Arquivo PDF</label>
-    <div id="resultados"></div>
+import fitz  # PyMuPDF
 
-    <script>
-        document.getElementById('fileInput').addEventListener('change', function (event) {
-            const file = event.target.files[0];
-            
-            if (file) {
-                const reader = new FileReader();
-                
-                reader.onload = function (e) {
-                    const text = e.target.result;
-                    // Adicione aqui a lógica de pesquisa no lado do cliente
-                    const resultados = buscarInformacoes(text);
-                    exibirResultados(resultados);
-                };
-                
-                reader.readAsText(file);
-            }
-        });
+def buscar_informacoes(pdf_path):
+    doc = fitz.open(pdf_path)
+    informacoes_encontradas = []
 
-        function buscarInformacoes(texto) {
-            // Implemente a lógica de pesquisa no lado do cliente aqui
-            // Por exemplo, você pode usar expressões regulares ou outras técnicas de processamento de texto
-            return ["Resultado 1", "Resultado 2", "Resultado 3"];
-        }
+    for page_num in range(doc.page_count):
+        page = doc[page_num]
+        text = page.get_text("text")
 
-        function exibirResultados(resultados) {
-            const resultadosDiv = document.getElementById('resultados');
-            resultadosDiv.innerHTML = "<h2>Resultados:</h2>";
-            resultados.forEach(function (resultado) {
-                const resultadoParagrafo = document.createElement('p');
-                resultadoParagrafo.textContent = resultado;
-                resultadosDiv.appendChild(resultadoParagrafo);
-            });
-        }
-    </script>
-</body>
-</html>
+        for linha in text.split('\n'):
+            # Condição para buscar pelo nome
+            if "Nome:" in linha and "Samuel Ferreira de Campos" in linha:
+                nome = linha.split(":")[1].strip()
+                informacoes_encontradas.append({"Tipo": "Nome", "Valor": nome})
+            # Condição para buscar pelo número de RF
+            elif "Número RF:" in linha and "8346178" in linha:
+                numero_rf = linha.split(":")[1].strip()
+                informacoes_encontradas.append({"Tipo": "Número RF", "Valor": numero_rf})
+
+    doc.close()
+    return informacoes_encontradas
+
+# Exemplo de uso
+resultado_pesquisa = buscar_informacoes("caminho/do/seu/arquivo.pdf")
+print(resultado_pesquisa)
