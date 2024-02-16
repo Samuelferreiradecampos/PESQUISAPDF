@@ -1,24 +1,24 @@
-import fitz  # PyMuPDF
+import PyPDF2
 import os
 
 def buscar_informacoes(pdf_path, nome, numero_rf):
-    doc = fitz.open(pdf_path)
     informacoes_encontradas = []
 
-    for page_num in range(doc.page_count):
-        page = doc[page_num]
-        text = page.get_text("text")
+    with open(pdf_path, 'rb') as file:
+        pdf_reader = PyPDF2.PdfFileReader(file)
 
-        for linha in text.split('\n'):
+        for page_num in range(pdf_reader.numPages):
+            page = pdf_reader.getPage(page_num)
+            text = page.extract_text()
+
             # Procurar pelo nome
-            if nome in linha:
+            if nome in text:
                 informacoes_encontradas.append({"Tipo": "Nome", "Valor": nome})
             
             # Procurar pelo número de RF
-            elif numero_rf in linha:
+            if numero_rf in text:
                 informacoes_encontradas.append({"Tipo": "Número de RF", "Valor": numero_rf})
 
-    doc.close()
     return informacoes_encontradas
 
 if __name__ == "__main__":
@@ -33,7 +33,5 @@ if __name__ == "__main__":
     resultado_pesquisa = buscar_informacoes(pdf_path_no_desktop, nome_procurado, numero_rf_procurado)
 
     # Exibir resultados apenas se houver algo para mostrar
-    if resultado_pesquisa:
-        print("Resultados da pesquisa:")
-        for resultado in resultado_pesquisa:
-            print(f"Tipo: {resultado['Tipo']}, Valor: {resultado['Valor']}")
+    for resultado in resultado_pesquisa:
+        print(f"Tipo: {resultado['Tipo']}, Valor: {resultado['Valor']}")
