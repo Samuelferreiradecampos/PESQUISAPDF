@@ -1,7 +1,7 @@
 import fitz  # PyMuPDF
 import os
 
-def buscar_informacoes(pdf_path, nome, numero_rf):
+def localizar_nome(pdf_path, nome):
     informacoes_encontradas = []
 
     doc = fitz.open(pdf_path)
@@ -12,11 +12,7 @@ def buscar_informacoes(pdf_path, nome, numero_rf):
 
         # Procurar pelo nome
         if nome in text:
-            informacoes_encontradas.append({"Tipo": "Nome", "Valor": nome})
-        
-        # Procurar pelo número de RF
-        if numero_rf in text:
-            informacoes_encontradas.append({"Tipo": "Número de RF", "Valor": numero_rf})
+            informacoes_encontradas.append({"Tipo": "Nome", "Valor": nome, "Página": page_num + 1})
 
     doc.close()
     return informacoes_encontradas
@@ -25,13 +21,16 @@ if __name__ == "__main__":
     # Caminho do PDF no desktop
     pdf_path_no_desktop = os.path.join(os.path.expanduser('~'), 'Desktop', 'documento.pdf')
 
-    # Informações a serem procuradas
+    # Nome a ser procurado
     nome_procurado = "Samuel Ferreira de Campos"
-    numero_rf_procurado = "8346178"
 
     # Exemplo de uso
-    resultado_pesquisa = buscar_informacoes(pdf_path_no_desktop, nome_procurado, numero_rf_procurado)
+    resultado_pesquisa = localizar_nome(pdf_path_no_desktop, nome_procurado)
 
     # Exibir resultados apenas se houver algo para mostrar
-    for resultado in resultado_pesquisa:
-        print(f"Tipo: {resultado['Tipo']}, Valor: {resultado['Valor']}")
+    if resultado_pesquisa:
+        print("Resultados da pesquisa:")
+        for resultado in resultado_pesquisa:
+            print(f"Tipo: {resultado['Tipo']}, Valor: {resultado['Valor']}, Página: {resultado['Página']}")
+    else:
+        print("Nenhum resultado encontrado.")
