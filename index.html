@@ -1,7 +1,5 @@
 import fitz  # PyMuPDF
 import os
-import tkinter as tk
-from tkinter import ttk
 
 def buscar_informacoes(pdf_path, nome, numero_rf):
     doc = fitz.open(pdf_path)
@@ -23,47 +21,14 @@ def buscar_informacoes(pdf_path, nome, numero_rf):
     doc.close()
     return informacoes_encontradas
 
-def iniciar_pesquisa():
-    nome_procurado = entry_nome.get()
-    numero_rf_procurado = entry_numero_rf.get()
-
+if __name__ == "__main__":
     # Caminho do PDF no desktop
     pdf_path_no_desktop = os.path.join(os.path.expanduser('~'), 'Desktop', 'documento.pdf')
 
+    # Obter entradas do usuário
+    nome_procurado = input("Digite o Nome do Servidor: ")
+    numero_rf_procurado = input("Digite o Número de RF: ")
+
     # Exemplo de uso
     resultado_pesquisa = buscar_informacoes(pdf_path_no_desktop, nome_procurado, numero_rf_procurado)
-    
-    # Exibir resultados na janela
-    resultado_text.config(state=tk.NORMAL)
-    resultado_text.delete(1.0, tk.END)  # Limpar resultado anterior
-    resultado_text.insert(tk.END, resultado_pesquisa)
-    resultado_text.config(state=tk.DISABLED)
-
-# Criar janela principal
-root = tk.Tk()
-root.title("Pesquisa em PDF")
-
-# Criar campos de entrada e botão
-label_nome = ttk.Label(root, text="Nome do Servidor:")
-entry_nome = ttk.Entry(root, width=30)
-
-label_numero_rf = ttk.Label(root, text="Número de RF:")
-entry_numero_rf = ttk.Entry(root, width=30)
-
-button_pesquisar = ttk.Button(root, text="Pesquisar", command=iniciar_pesquisa)
-
-# Configurar layout usando grid
-label_nome.grid(row=0, column=0, padx=5, pady=5)
-entry_nome.grid(row=0, column=1, padx=5, pady=5)
-
-label_numero_rf.grid(row=1, column=0, padx=5, pady=5)
-entry_numero_rf.grid(row=1, column=1, padx=5, pady=5)
-
-button_pesquisar.grid(row=2, column=0, columnspan=2, pady=10)
-
-# Configurar área de exibição de resultados
-resultado_text = tk.Text(root, height=10, width=50, state=tk.DISABLED)
-resultado_text.grid(row=3, column=0, columnspan=2, padx=5, pady=5)
-
-# Iniciar loop principal da interface gráfica
-root.mainloop()
+    print(resultado_pesquisa)
