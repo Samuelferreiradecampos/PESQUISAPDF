@@ -2,6 +2,8 @@ import fitz  # PyMuPDF
 import os
 
 def buscar_informacoes(pdf_path, nome, numero_rf):
+    print("Pesquisando...")
+
     doc = fitz.open(pdf_path)
     informacoes_encontradas = []
 
