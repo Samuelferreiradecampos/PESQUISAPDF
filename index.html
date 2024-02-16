@@ -1,9 +1,8 @@
 import fitz  # PyMuPDF
 import os
+import threading
 
-def buscar_informacoes(pdf_path, nome, numero_rf):
-    print("Pesquisando...")
-
+def buscar_informacoes(pdf_path, nome, numero_rf, resultado_callback):
     doc = fitz.open(pdf_path)
     informacoes_encontradas = []
 
@@ -21,7 +20,17 @@ def buscar_informacoes(pdf_path, nome, numero_rf):
                 informacoes_encontradas.append({"Tipo": "Número de RF", "Valor": numero_rf})
 
     doc.close()
-    return informacoes_encontradas
+
+    # Chamar a função de retorno de resultado com as informações encontradas
+    resultado_callback(informacoes_encontradas)
+
+def exibir_resultado_pesquisa(resultado_pesquisa):
+    if resultado_pesquisa:
+        print("\nResultados encontrados:")
+        for resultado in resultado_pesquisa:
+            print(f"Tipo: {resultado['Tipo']}, Valor: {resultado['Valor']}")
+    else:
+        print("\nNenhum resultado encontrado.")
 
 if __name__ == "__main__":
     # Caminho do PDF no desktop
@@ -31,13 +40,12 @@ if __name__ == "__main__":
     nome_procurado = "Samuel Ferreira de Campos"
     numero_rf_procurado = "8346178"
 
-    # Exemplo de uso
-    resultado_pesquisa = buscar_informacoes(pdf_path_no_desktop, nome_procurado, numero_rf_procurado)
+    # Iniciar a pesquisa em uma thread separada
+    thread_pesquisa = threading.Thread(target=buscar_informacoes, args=(pdf_path_no_desktop, nome_procurado, numero_rf_procurado, exibir_resultado_pesquisa))
+    thread_pesquisa.start()
 
-    # Exibir resultados ou mensagem de nenhum resultado encontrado
-    if resultado_pesquisa:
-        print("\nResultados encontrados:")
-        for resultado in resultado_pesquisa:
-            print(f"Tipo: {resultado['Tipo']}, Valor: {resultado['Valor']}")
-    else:
-        print("\nNenhum resultado encontrado.")
+    # Exibir mensagem "Pesquisando..."
+    print("Pesquisando...")
+
+    # Aguardar até que a pesquisa seja concluída
+    thread_pesquisa.join()
