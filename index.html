@@ -25,10 +25,17 @@ if __name__ == "__main__":
     # Caminho do PDF no desktop
     pdf_path_no_desktop = os.path.join(os.path.expanduser('~'), 'Desktop', 'documento.pdf')
 
-    # Obter entradas do usuário
-    nome_procurado = input("Digite o Nome do Servidor: ")
-    numero_rf_procurado = input("Digite o Número de RF: ")
+    # Informações a serem procuradas
+    nome_procurado = "Samuel Ferreira de Campos"
+    numero_rf_procurado = "8346178"
 
     # Exemplo de uso
     resultado_pesquisa = buscar_informacoes(pdf_path_no_desktop, nome_procurado, numero_rf_procurado)
-    print(resultado_pesquisa)
+
+    # Exibir resultados ou mensagem de nenhum resultado encontrado
+    if resultado_pesquisa:
+        print("Resultados encontrados:")
+        for resultado in resultado_pesquisa:
+            print(f"Tipo: {resultado['Tipo']}, Valor: {resultado['Valor']}")
+    else:
+        print("Nenhum resultado encontrado.")
