@@ -1,5 +1,6 @@
 import fitz  # PyMuPDF
 import re
+import os
 
 def extrair_nomes_numeros(pdf_path):
     nomes = []
@@ -12,7 +13,7 @@ def extrair_nomes_numeros(pdf_path):
         text = page.get_text("text")
 
         # Usar regex para encontrar nomes e números
-        padrao_nome = re.compile(r'\b[A-Z][a-z]+ [A-Z][a-z]+\b')
+        padrao_nome = re.compile(r'\bEMEF PROFA MARIA APARECIDA DO NASCIMENTO\b', re.IGNORECASE)
         padrao_numero = re.compile(r'\b\d{7}\b')
 
         nomes.extend(padrao_nome.findall(text))
@@ -22,12 +23,23 @@ def extrair_nomes_numeros(pdf_path):
     return nomes, numeros
 
 if __name__ == "__main__":
-    # Caminho do PDF
-    pdf_path = "caminho/do/seu/arquivo.pdf"
+    # Caminho do PDF no Desktop
+    pdf_path_no_desktop = os.path.join(os.path.expanduser('~'), 'Desktop', 'DIARIO OFICIAL PDF.pdf')
 
     # Exemplo de uso
-    nomes_encontrados, numeros_encontrados = extrair_nomes_numeros(pdf_path)
+    nomes_encontrados, numeros_encontrados = extrair_nomes_numeros(pdf_path_no_desktop)
 
-    # Exibir resultados
-    print("Nomes encontrados:", nomes_encontrados)
-    print("Números encontrados:", numeros_encontrados)
+    # Exibir resultados apenas se houver algo para mostrar
+    if nomes_encontrados:
+        print("Nomes encontrados:")
+        for nome in nomes_encontrados:
+            print(nome)
+    else:
+        print("Nenhum nome encontrado.")
+
+    if numeros_encontrados:
+        print("Números encontrados:")
+        for numero in numeros_encontrados:
+            print(numero)
+    else:
+        print("Nenhum número encontrado.")
