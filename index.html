@@ -1,33 +1,34 @@
-import fitz  # PyMuPDF
+import PyPDF2
 import re
 import os
 
-def extrair_nomes_numeros(pdf_path):
-    nomes = []
-    numeros = []
+def extrair_nome(pdf_path):
+    nomes_encontrados = []
 
-    doc = fitz.open(pdf_path)
+    # Extraindo o nome do arquivo sem a extensão
+    nome_arquivo = os.path.splitext(os.path.basename(pdf_path))[0]
 
-    for page_num in range(doc.page_count):
-        page = doc[page_num]
-        text = page.get_text("text")
+    with open(pdf_path, 'rb') as pdf_file:
+        pdf_reader = PyPDF2.PdfFileReader(pdf_file)
 
-        # Usar regex para encontrar nomes e números
-        padrao_nome = re.compile(r'\bEMEF PROFA MARIA APARECIDA DO NASCIMENTO\b', re.IGNORECASE)
-        padrao_numero = re.compile(r'\b\d{7}\b')
+        for page_num in range(pdf_reader.numPages):
+            page = pdf_reader.getPage(page_num)
+            text = page.extractText()
 
-        nomes.extend(padrao_nome.findall(text))
-        numeros.extend(padrao_numero.findall(text))
+            # Usar regex para encontrar o nome do arquivo (removendo a extensão) na pesquisa
+            padrao_nome_arquivo = re.compile(re.escape(nome_arquivo), re.IGNORECASE)
 
-    doc.close()
-    return nomes, numeros
+            if padrao_nome_arquivo.search(text):
+                nomes_encontrados.append(nome_arquivo)
+
+    return nomes_encontrados
 
 if __name__ == "__main__":
     # Caminho do PDF no Desktop
-    pdf_path_no_desktop = os.path.join(os.path.expanduser('~'), 'Desktop', 'DIARIO OFICIAL PDF.pdf')
+    pdf_path_no_desktop = os.path.join(os.path.expanduser('~'), 'Desktop', 'diario oficial edicao 16.02.pdf')
 
     # Exemplo de uso
-    nomes_encontrados, numeros_encontrados = extrair_nomes_numeros(pdf_path_no_desktop)
+    nomes_encontrados = extrair_nome(pdf_path_no_desktop)
 
     # Exibir resultados apenas se houver algo para mostrar
     if nomes_encontrados:
@@ -35,11 +36,4 @@ if __name__ == "__main__":
         for nome in nomes_encontrados:
             print(nome)
     else:
-        print("Nenhum nome encontrado.")
-
-    if numeros_encontrados:
-        print("Números encontrados:")
-        for numero in numeros_encontrados:
-            print(numero)
-    else:
-        print("Nenhum número encontrado.")
+        print("Nenhum resultado encontrado.")
