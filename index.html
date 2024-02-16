@@ -9,10 +9,10 @@ def extrair_nomes_numeros(pdf_path):
 
     for page_num in range(doc.page_count):
         page = doc[page_num]
-        text = page.get_text()
+        text = page.get_text("text")
 
         # Usar regex para encontrar nomes e números
-        padrao_nome = re.compile(r'\b[A-Z][a-z]+\b [A-Z][a-z]+\b')
+        padrao_nome = re.compile(r'\b[A-Z][a-z]+ [A-Z][a-z]+\b')
         padrao_numero = re.compile(r'\b\d{7}\b')
 
         nomes.extend(padrao_nome.findall(text))
