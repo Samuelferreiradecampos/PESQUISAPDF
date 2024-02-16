@@ -1,43 +1,7 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pesquisa Diário Oficial</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            text-align: center;
-            margin: 50px;
-        }
-        input[type="file"] {
-            display: none;
-        }
-        label {
-            padding: 10px;
-            background-color: #3498db;
-            color: white;
-            cursor: pointer;
-        }
-    </style>
-</head>
-<body>
-    <h1>Pesquisa diário oficial São Paulo</h1>
-    <input type="file" id="fileInput" accept=".pdf">
-    <label for="fileInput" id="fileLabel">Escolher Arquivo PDF</label>
-    <div id="resultados"></div>
-
-    <script>
-        document.getElementById('fileInput').addEventListener('change', function (event) {
-            const file = event.target.files[0];
-            
-            if (file) {
-                const reader = new FileReader();
-                
-                reader.onload = function (e) {
-                    const text = e.target.result;
-                    // import fitz  # PyMuPDF
+import fitz  # PyMuPDF
 import os
+import tkinter as tk
+from tkinter import ttk
 
 def buscar_informacoes(pdf_path, nome, numero_rf):
     doc = fitz.open(pdf_path)
@@ -59,66 +23,47 @@ def buscar_informacoes(pdf_path, nome, numero_rf):
     doc.close()
     return informacoes_encontradas
 
-# Caminho do PDF no desktop
-pdf_path_no_desktop = os.path.join(os.path.expanduser('~'), 'Desktop', 'documento.pdf')
+def iniciar_pesquisa():
+    nome_procurado = entry_nome.get()
+    numero_rf_procurado = entry_numero_rf.get()
 
-# Informações a serem procuradas
-nome_procurado = "Samuel Ferreira de Campos"
-numero_rf_procurado = "8346178" = buscarInformacoes(text);
-                    exibirResultados(resultados);
-                };
-                
-                reader.readAsText(file);
-            }
-        });
+    # Caminho do PDF no desktop
+    pdf_path_no_desktop = os.path.join(os.path.expanduser('~'), 'Desktop', 'documento.pdf')
 
-        function buscarInformacoes(texto) {
-            // Implemente a lógica de pesquisa no lado do cliente aqui
-            // Por exemplo, você pode usar expressões regulares ou outras técnicas de processamento de texto
-            return import fitz  # PyMuPDF
-import os
+    # Exemplo de uso
+    resultado_pesquisa = buscar_informacoes(pdf_path_no_desktop, nome_procurado, numero_rf_procurado)
+    
+    # Exibir resultados na janela
+    resultado_text.config(state=tk.NORMAL)
+    resultado_text.delete(1.0, tk.END)  # Limpar resultado anterior
+    resultado_text.insert(tk.END, resultado_pesquisa)
+    resultado_text.config(state=tk.DISABLED)
 
-def buscar_informacoes(pdf_path, nome, numero_rf):
-    doc = fitz.open(pdf_path)
-    informacoes_encontradas = []
+# Criar janela principal
+root = tk.Tk()
+root.title("Pesquisa em PDF")
 
-    for page_num in range(doc.page_count):
-        page = doc[page_num]
-        text = page.get_text("text")
-        
-        for linha in text.split('\n'):
-            # Procurar pelo nome
-            if nome in linha:
-                informacoes_encontradas.append({"Tipo": "Nome", "Valor": nome})
-            
-            # Procurar pelo número de RF
-            elif numero_rf in linha:
-                informacoes_encontradas.append({"Tipo": "Número de RF", "Valor": numero_rf})
+# Criar campos de entrada e botão
+label_nome = ttk.Label(root, text="Nome do Servidor:")
+entry_nome = ttk.Entry(root, width=30)
 
-    doc.close()
-    return informacoes_encontradas
+label_numero_rf = ttk.Label(root, text="Número de RF:")
+entry_numero_rf = ttk.Entry(root, width=30)
 
-# Caminho do PDF no desktop
-pdf_path_no_desktop = os.path.join(os.path.expanduser('~'), 'Desktop', 'documento.pdf')
+button_pesquisar = ttk.Button(root, text="Pesquisar", command=iniciar_pesquisa)
 
-# Informações a serem procuradas
-nome_procurado = "Samuel Ferreira de Campos"
-numero_rf_procurado = "8346178"
+# Configurar layout usando grid
+label_nome.grid(row=0, column=0, padx=5, pady=5)
+entry_nome.grid(row=0, column=1, padx=5, pady=5)
 
-# Exemplo de uso
-resultado_pesquisa = buscar_informacoes(pdf_path_no_desktop, nome_procurado, numero_rf_procurado)
-print(resultado_pesquisa)
-        }
+label_numero_rf.grid(row=1, column=0, padx=5, pady=5)
+entry_numero_rf.grid(row=1, column=1, padx=5, pady=5)
 
-        function exibirResultados(resultados) {
-            const resultadosDiv = document.getElementById('resultados');
-            resultadosDiv.innerHTML = "<h2>Resultados:</h2>";
-            resultados.forEach(function (resultado) {
-                const resultadoParagrafo = document.createElement('p');
-                resultadoParagrafo.textContent = resultado;
-                resultadosDiv.appendChild(resultadoParagrafo);
-            });
-        }
-    </script>
-</body>
-</html>
+button_pesquisar.grid(row=2, column=0, columnspan=2, pady=10)
+
+# Configurar área de exibição de resultados
+resultado_text = tk.Text(root, height=10, width=50, state=tk.DISABLED)
+resultado_text.grid(row=3, column=0, columnspan=2, padx=5, pady=5)
+
+# Iniciar loop principal da interface gráfica
+root.mainloop()
