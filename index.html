@@ -1,25 +1,18 @@
-import PyPDF2
-import re
+import pdfplumber
 import os
 
-def extrair_nome(pdf_path):
+def extrair_nome(pdf_path, nome_procurado):
     nomes_encontrados = []
 
-    # Extraindo o nome do arquivo sem a extensão
-    nome_arquivo = os.path.splitext(os.path.basename(pdf_path))[0]
+    with pdfplumber.open(pdf_path) as pdf:
+        for page in pdf.pages:
+            text = page.extract_text()
 
-    with open(pdf_path, 'rb') as pdf_file:
-        pdf_reader = PyPDF2.PdfFileReader(pdf_file)
+            # Usar regex para encontrar o nome específico
+            padrao_nome = re.compile(re.escape(nome_procurado), re.IGNORECASE)
 
-        for page_num in range(pdf_reader.numPages):
-            page = pdf_reader.getPage(page_num)
-            text = page.extractText()
-
-            # Usar regex para encontrar o nome do arquivo (removendo a extensão) na pesquisa
-            padrao_nome_arquivo = re.compile(re.escape(nome_arquivo), re.IGNORECASE)
-
-            if padrao_nome_arquivo.search(text):
-                nomes_encontrados.append(nome_arquivo)
+            if padrao_nome.search(text):
+                nomes_encontrados.append(nome_procurado)
 
     return nomes_encontrados
 
@@ -27,8 +20,11 @@ if __name__ == "__main__":
     # Caminho do PDF no Desktop
     pdf_path_no_desktop = os.path.join(os.path.expanduser('~'), 'Desktop', 'diario oficial edicao 16.02.pdf')
 
+    # Nome a ser procurado
+    nome_procurado = "diario oficial edicao 16.02"
+
     # Exemplo de uso
-    nomes_encontrados = extrair_nome(pdf_path_no_desktop)
+    nomes_encontrados = extrair_nome(pdf_path_no_desktop, nome_procurado)
 
     # Exibir resultados apenas se houver algo para mostrar
     if nomes_encontrados:
