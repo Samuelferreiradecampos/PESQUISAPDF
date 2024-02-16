@@ -32,10 +32,8 @@ if __name__ == "__main__":
     # Exemplo de uso
     resultado_pesquisa = buscar_informacoes(pdf_path_no_desktop, nome_procurado, numero_rf_procurado)
 
-    # Exibir resultados
-    print("Resultados da pesquisa:")
+    # Exibir resultados apenas se houver algo para mostrar
     if resultado_pesquisa:
+        print("Resultados da pesquisa:")
         for resultado in resultado_pesquisa:
             print(f"Tipo: {resultado['Tipo']}, Valor: {resultado['Valor']}")
-    else:
-        print("Nenhum resultado encontrado.")
